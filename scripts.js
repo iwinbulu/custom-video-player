@@ -45,6 +45,12 @@ function updateButton() {
   // This line updates the text content of the button element (toggle) to the determined icon (icon). This effectively changes the text displayed on the button to reflect the current playback state.
 }
 // In summary, this function dynamically updates the button's text content to display the appropriate playback icon ("PLAY" or "PAUSE") based on the current state of the video, providing a clear visual indication of whether the video is playing or paused.
+toggle.addEventListener("click", togglePlay); // Clicking the playback toggle button will also toggle the playback between playing and paused.
+video.addEventListener("click", togglePlay); //  When you click on the video, it will toggle the playback between playing and paused.
+video.addEventListener("play", updateButton);
+video.addEventListener("pause", updateButton);
+// When the video starts playing or pauses, it will update the playback toggle button's appearance accordingly.
+// ---------------
 
 // SKIP VIDEO BUTTON
 // function skip() {
@@ -52,7 +58,6 @@ function updateButton() {
 // }
 // skipButtons.forEach((button) => button.addEventListener("click", skip));
 // Clicking on the skip buttons will skip the video forward or backward, depending on the button's action.
-
 // The code snippet involves adding event listeners to each button element within the skipButtons collection. When a skip button is clicked, it should adjust the video's playback position by the specified amount.
 skipButtons.forEach((button) => {
   // This line iterates over each button element within the skipButtons collection, represented by the button parameter, and executes the provided callback function.
@@ -62,15 +67,14 @@ skipButtons.forEach((button) => {
   });
 });
 // This code ensures that clicking a skip button triggers an event handler function that updates the video's playback position based on the specified skip value associated with the button.
-
 // ---------------
+
 // The code snippet sets up event listeners for all slider elements with the class ".player__slider" to trigger the handleRangeUpdate() function on both "change" and "mousemove" events.
 function handleRangeUpdate() {
   // This defines the handleRangeUpdate() function, which will be executed when a slider element triggers an event.
   video[this.name] = this.value; // Inside the function, the this keyword refers to the slider element that triggered the event. The *video[this.name] = this.value; statement updates the corresponding video property based on the slider's name and its current value:
   // *video.name[volume, playbackRate]
 }
-
 ranges.forEach((range) => range.addEventListener("change", handleRangeUpdate)); // This line attaches an event listener to each slider element in the ranges array for the "change" event. When the slider's value is changed, the handleRangeUpdate() function will be called.
 
 ranges.forEach((range) =>
@@ -78,21 +82,46 @@ ranges.forEach((range) =>
 ); // Dragging the slider handles will adjust the corresponding settings, such as volume or playback speed, in real time. These changes will take effect immediately.
 
 // This code ensures that changes to the slider elements are reflected in the corresponding video properties, both on value changes (triggered by "change") and continuous mouse movements (triggered by "mousemove"). This allows for dynamic and responsive control over video volume or playback speed using the slider controls.
-// ===========
+// ---------------
 
 function handleProgress() {
-  const percent = (video.currentTime / video.duration) * 100;
-  progressBar.style.flexBasis = `${percent}%`;
-}
+  // Calculate the playback percentage as a ratio of the current time to the total duration
+  const playbackPercentage = video.currentTime / video.duration;
 
-// Hook up the event listeners
-video.addEventListener("click", togglePlay); //  When you click on the video, it will toggle the playback between playing and paused.
-video.addEventListener("play", updateButton);
-video.addEventListener("pause", updateButton);
-// // When the video starts playing or pauses, it will update the playback toggle button's appearance accordingly.
+  // Convert the playback percentage to a percentage value (0-100)
+  const progressPercentage = playbackPercentage * 100;
+
+  // Update the progress bar's width using the calculated percentage value
+  progressBar.style.flexBasis = `${progressPercentage}%`;
+}
 
 video.addEventListener("timeupdate", handleProgress); // As the video progresses, the progress bar will be updated to reflect the current playback position.
 
-toggle.addEventListener("click", togglePlay); // Clicking the playback toggle button will also toggle the playback between playing and paused.
+function scrub(e) {
+  // Calculate the scrubbing time based on the mouse's offset position within the progress bar
+  const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
 
+  // Set the video's playback time to the calculated scrubbing time
+  video.currentTime = scrubTime;
+}
+
+let mousedown = false; // Track whether the mouse button is pressed down
+
+progress.addEventListener("click", scrub); // Handle direct clicks on the progress bar
+progress.addEventListener("mousemove", (e) => mousedown && scrub(e)); // Update scrubbing on mouse movement only if the button is pressed down
+progress.addEventListener("mousedown", (e) => (mousedown = true)); // Set the mousedown flag to true when the button is pressed
+progress.addEventListener("mouseup", (e) => (mousedown = false)); // Set the mousedown flag to false when the button is released
+
+const videoElement = document.querySelector(".player__video"); // This code first retrieves the video element and the fullscreen button using document.querySelector().
+const fullscreenButton = document.querySelector(".fullscreen"); // Then, it attaches an event listener to the fullscreen button.
+
+fullscreenButton.addEventListener("click", () => {
+  if (!document.fullscreenElement) {
+    videoElement.requestFullscreen(); // When the fullscreen button is clicked, it checks whether the document is already in full-screen mode. If it's not, it calls the requestFullscreen() method on the video element to enter full-screen mode.
+  } else {
+    document.exitFullscreen(); // Conversely, if the document is in full-screen mode, it calls document.exitFullscreen() to exit full-screen mode.
+  }
+});
+
+// ====================================================================================================================
 // In summary, this code ensures that various interactions with the video player, such as clicking buttons, skipping, or adjusting sliders, trigger appropriate actions to control playback and provide visual feedback.

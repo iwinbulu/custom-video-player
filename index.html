@@ -5,11 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>>HTML Video Player</title>
     <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
   </head>
   <body>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
     <div class="player">
       <video class="player__video viewer" src="asset/652333414.mp4"></video>
-
       <div class="player__controls">
         <div class="progress">
           <div class="progress__filled"></div>
@@ -35,6 +43,9 @@
         />
         <button data-skip="-10" class="player__button">« 10s</button>
         <button data-skip="25" class="player__button">25s »</button>
+        <button class="fullscreen" name="Toggle Fullscreen">
+          <span class="material-symbols-outlined"> fullscreen </span>
+        </button>
       </div>
     </div>
 
